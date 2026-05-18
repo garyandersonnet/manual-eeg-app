@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pi Local Muse Streamer</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; background: #f5f5f7; color: #1d1d1f; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; }
+        button { background: #0071e3; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        button:hover { background: #0077ed; }
+        pre { background: #1d1d1f; color: #00ff00; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 13px; margin-top: 20px;}
+        .status { margin: 20px 0; font-weight: bold; color: #86868b; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>EEGEdu Pi Manual Rebuild</h1>
+    <p>Serving direct Web Bluetooth streaming hooks through an SSH Tunnel.</p>
+    
+    <button id="connectBtn">Connect Muse Headband</button>
+    <div id="status" class="status">Status: Disconnected</div>
+    
+    <h3>Live EEG Data</h3>
+    <pre id="output">Waiting for connection initialization...</pre>
+</div>
+
+<script src="bundle.js"></script>
+</body>
+</html>
