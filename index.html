@@ -6,23 +6,126 @@
     <title>Pi Local Muse Streamer</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; background: #f5f5f7; color: #1d1d1f; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto; }
+        .app { max-width: 900px; margin: 0 auto; }
         button { background: #0071e3; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 500; }
         button:hover { background: #0077ed; }
         pre { background: #1d1d1f; color: #00ff00; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 13px; margin-top: 20px;}
         .status { margin: 20px 0; font-weight: bold; color: #86868b; }
+        .voltage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 16px; }
+        .voltage-field { background: white; border: 1px solid #d2d2d7; border-radius: 8px; padding: 14px; }
+        .voltage-label { color: #6e6e73; font-size: 13px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+        .voltage-value { font-size: 30px; font-weight: 700; line-height: 1.1; margin: 10px 0 4px; overflow-wrap: anywhere; }
+        .voltage-unit { color: #6e6e73; font-size: 14px; font-weight: 600; }
+        .voltage-timestamp { color: #86868b; font-size: 12px; margin-top: 8px; }
+        .band-grid { display: grid; gap: 6px; margin-top: 14px; }
+        .band-field { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; background: #f5f5f7; border-radius: 6px; padding: 7px 9px; }
+        .band-label { color: #6e6e73; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .band-value { color: #1d1d1f; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; text-align: right; }
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 16px; }
+        .chart-panel { background: white; border: 1px solid #d2d2d7; border-radius: 8px; padding: 14px; min-width: 0; }
+        .chart-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+        .chart-title { color: #1d1d1f; font-size: 14px; font-weight: 700; text-transform: uppercase; }
+        .chart-value { color: #6e6e73; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; text-align: right; }
+        .band-chart { display: block; width: 100%; height: 150px; background: #fbfbfd; border: 1px solid #e5e5ea; border-radius: 6px; }
+        .audio-status { color: #6e6e73; font-size: 13px; font-weight: 700; margin-top: 8px; }
+        @media (max-width: 600px) {
+            body { padding: 20px; }
+            .voltage-value { font-size: 24px; }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="app">
     <h1>EEGEdu Pi Manual Rebuild</h1>
     <p>Serving direct Web Bluetooth streaming hooks through an SSH Tunnel.</p>
     
     <button id="connectBtn">Connect Muse Headband</button>
     <div id="status" class="status">Status: Disconnected</div>
+    <div id="audioStatus" class="audio-status">Delta tone: off</div>
     
-    <h3>Live EEG Data</h3>
+    <h3>Live Voltages</h3>
+    <div class="voltage-grid" id="voltageGrid">
+        <section class="voltage-field" data-electrode="0">
+            <div class="voltage-label">TP9</div>
+            <div class="voltage-value" id="voltage-0">--</div>
+            <div class="voltage-unit">microvolts</div>
+            <div class="voltage-timestamp" id="timestamp-0">Waiting for data</div>
+            <div class="band-grid">
+                <div class="band-field"><span class="band-label">Delta</span><span class="band-value" id="delta-0">--</span></div>
+                <div class="band-field"><span class="band-label">Theta</span><span class="band-value" id="theta-0">--</span></div>
+                <div class="band-field"><span class="band-label">Alpha</span><span class="band-value" id="alpha-0">--</span></div>
+                <div class="band-field"><span class="band-label">Beta</span><span class="band-value" id="beta-0">--</span></div>
+                <div class="band-field"><span class="band-label">Gamma</span><span class="band-value" id="gamma-0">--</span></div>
+            </div>
+        </section>
+        <section class="voltage-field" data-electrode="1">
+            <div class="voltage-label">AF7</div>
+            <div class="voltage-value" id="voltage-1">--</div>
+            <div class="voltage-unit">microvolts</div>
+            <div class="voltage-timestamp" id="timestamp-1">Waiting for data</div>
+            <div class="band-grid">
+                <div class="band-field"><span class="band-label">Delta</span><span class="band-value" id="delta-1">--</span></div>
+                <div class="band-field"><span class="band-label">Theta</span><span class="band-value" id="theta-1">--</span></div>
+                <div class="band-field"><span class="band-label">Alpha</span><span class="band-value" id="alpha-1">--</span></div>
+                <div class="band-field"><span class="band-label">Beta</span><span class="band-value" id="beta-1">--</span></div>
+                <div class="band-field"><span class="band-label">Gamma</span><span class="band-value" id="gamma-1">--</span></div>
+            </div>
+        </section>
+        <section class="voltage-field" data-electrode="2">
+            <div class="voltage-label">AF8</div>
+            <div class="voltage-value" id="voltage-2">--</div>
+            <div class="voltage-unit">microvolts</div>
+            <div class="voltage-timestamp" id="timestamp-2">Waiting for data</div>
+            <div class="band-grid">
+                <div class="band-field"><span class="band-label">Delta</span><span class="band-value" id="delta-2">--</span></div>
+                <div class="band-field"><span class="band-label">Theta</span><span class="band-value" id="theta-2">--</span></div>
+                <div class="band-field"><span class="band-label">Alpha</span><span class="band-value" id="alpha-2">--</span></div>
+                <div class="band-field"><span class="band-label">Beta</span><span class="band-value" id="beta-2">--</span></div>
+                <div class="band-field"><span class="band-label">Gamma</span><span class="band-value" id="gamma-2">--</span></div>
+            </div>
+        </section>
+        <section class="voltage-field" data-electrode="3">
+            <div class="voltage-label">TP10</div>
+            <div class="voltage-value" id="voltage-3">--</div>
+            <div class="voltage-unit">microvolts</div>
+            <div class="voltage-timestamp" id="timestamp-3">Waiting for data</div>
+            <div class="band-grid">
+                <div class="band-field"><span class="band-label">Delta</span><span class="band-value" id="delta-3">--</span></div>
+                <div class="band-field"><span class="band-label">Theta</span><span class="band-value" id="theta-3">--</span></div>
+                <div class="band-field"><span class="band-label">Alpha</span><span class="band-value" id="alpha-3">--</span></div>
+                <div class="band-field"><span class="band-label">Beta</span><span class="band-value" id="beta-3">--</span></div>
+                <div class="band-field"><span class="band-label">Gamma</span><span class="band-value" id="gamma-3">--</span></div>
+            </div>
+        </section>
+    </div>
+
+    <h3>Average Frequency Bands</h3>
+    <div class="chart-grid" id="chartGrid">
+        <section class="chart-panel">
+            <div class="chart-header"><span class="chart-title">Delta</span><span class="chart-value" id="delta-average">--</span></div>
+            <canvas class="band-chart" id="delta-chart" height="150"></canvas>
+        </section>
+        <section class="chart-panel">
+            <div class="chart-header"><span class="chart-title">Theta</span><span class="chart-value" id="theta-average">--</span></div>
+            <canvas class="band-chart" id="theta-chart" height="150"></canvas>
+        </section>
+        <section class="chart-panel">
+            <div class="chart-header"><span class="chart-title">Alpha</span><span class="chart-value" id="alpha-average">--</span></div>
+            <canvas class="band-chart" id="alpha-chart" height="150"></canvas>
+        </section>
+        <section class="chart-panel">
+            <div class="chart-header"><span class="chart-title">Beta</span><span class="chart-value" id="beta-average">--</span></div>
+            <canvas class="band-chart" id="beta-chart" height="150"></canvas>
+        </section>
+        <section class="chart-panel">
+            <div class="chart-header"><span class="chart-title">Gamma</span><span class="chart-value" id="gamma-average">--</span></div>
+            <canvas class="band-chart" id="gamma-chart" height="150"></canvas>
+        </section>
+    </div>
+
+    <h3>Connection Log</h3>
     <pre id="output">Waiting for connection initialization...</pre>
 </div>
 
